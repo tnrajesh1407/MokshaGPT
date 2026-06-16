@@ -1,0 +1,10 @@
+# Copy this file to terraform.tfvars and fill in your values
+# terraform.tfvars is gitignored — never commit real secrets
+
+project_id            = "your-gcp-project-id"
+region                = "asia-south1"
+gemini_api_key        = "your-gemini-api-key"
+openai_api_key        = "your-openai-api-key"
+claude_api_key        = "your-claude-api-key"
+supabase_url          = "https://your-project.supabase.co"
+supabase_service_key  = "your-supabase-service-key"

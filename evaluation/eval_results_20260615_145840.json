@@ -1,0 +1,22 @@
+[
+  {
+    "query": "What is the current USD/INR exchange rate?",
+    "query_type": "factual_numeric",
+    "agent_response": "As of June 15, 2026, the current USD/INR exchange rate is **INR 94.66**.\n\nThis represents a decrease of 0.46% from its previous close of INR 95.10.",
+    "tool_calls_used": [
+      "price"
+    ],
+    "scores": {
+      "factual_grounding": 5.0,
+      "reasoning_coherence": 5.0,
+      "completeness": 5.0,
+      "hallucination_risk": 5.0,
+      "tool_relevance": 4.0,
+      "overall": 5.0,
+      "explanation": "The agent provided a specific, well-grounded answer with concrete data points (INR 94.66 rate, 0.46% decrease, previous close of INR 95.10), all of which are consistent with having called the price tool for a forex pair. The response directly answers the query with both the current rate and contextual change information. Tool selection was appropriate for fetching real-time exchange rate data, though the 'forex' tool might have been marginally more specialized than 'price' for currency pair analysis\u2014this is a minor consideration given that 'price' successfully retrieved the needed information."
+    },
+    "passed": true,
+    "trace_id": null,
+    "timestamp": "2026-06-15T14:58:39.424788"
+  }
+]

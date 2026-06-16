@@ -1,0 +1,13 @@
+ticker,name,sector,asset_class,quantity,avg_cost,current_price,market_value,weight_pct,unrealized_pnl,unrealized_pnl_pct,dividend_yield,pe_ratio,beta
+AAPL,Apple Inc.,Technology,Equity,150,155.20,189.50,28425.00,12.8,5145.00,13.74,0.44,29.5,1.21
+MSFT,Microsoft Corp.,Technology,Equity,80,310.40,415.20,33216.00,14.9,8384.00,33.77,0.72,35.2,0.90
+GOOGL,Alphabet Inc.,Technology,Equity,25,128.50,172.80,4320.00,1.9,1107.50,17.18,0.00,22.8,1.05
+AMZN,Amazon.com Inc.,Consumer Discretionary,Equity,40,175.30,198.60,7944.00,3.6,932.00,13.28,0.00,45.1,1.15
+NVDA,NVIDIA Corp.,Technology,Equity,60,480.20,875.40,52524.00,23.6,23532.00,81.97,0.03,65.8,1.72
+JPM,JPMorgan Chase,Financials,Equity,120,145.80,198.20,23784.00,10.7,6288.00,43.13,2.20,11.2,1.08
+JNJ,Johnson & Johnson,Healthcare,Equity,90,158.40,152.30,13707.00,6.2,-549.00,-3.47,3.10,15.8,0.55
+PG,Procter & Gamble,Consumer Staples,Equity,75,142.60,168.90,12667.50,5.7,1972.50,13.83,2.35,24.6,0.48
+BRK.B,Berkshire Hathaway B,Financials,Equity,50,320.10,398.70,19935.00,9.0,3930.00,24.49,0.00,8.9,0.88
+TLT,iShares 20+ Yr Treasury,Fixed Income,ETF,200,98.40,92.10,18420.00,8.3,-1260.00,-6.41,4.20,0.00,0.00
+GLD,SPDR Gold Shares,Commodities,ETF,100,178.50,215.30,21530.00,9.7,3680.00,20.61,0.00,0.00,0.00
+CASH,Cash & Equivalents,Cash,Cash,1,5000.00,5000.00,5000.00,2.3,0.00,0.00,5.10,0.00,0.00

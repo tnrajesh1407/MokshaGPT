@@ -1,0 +1,76 @@
+[
+  {
+    "query": "Compare Nifty 50 and Bank Nifty performance over the last month.",
+    "query_type": "comparative",
+    "agent_response": "I encountered a connectivity issue while researching further, but here's what I found so far:\n\n## ^NSEI -- Technical Indicators\n**Current Price:** INR 23,853.90 (+0.94% today)\n\n### Momentum\n- **RSI (14):** 45.6 (neutral)\n\n### MACD\n- **MACD Line:** INR -100.1194\n- **MACD Signal:** INR -130.6937\n\n### Moving Averages\n- **SMA 20:** INR 23,548.73 (price above)\n- **SMA 50:** INR 23,749.75 (price above)\n- **SMA 200:** INR 24,915.07 (price below)\n\n### Volatility\n- **Volume Ratio (vs 20d avg):** 0.00x\n\n### 52-Week Range\n- **% from 52W High:** -9.40%\n- **% from 52W Low:** 6.82%\n\n### Market Regime\n- Low volatility / consolidation (tight Bollinger Bands)\n- MACD bullish crossover (momentum building)\n\n---\n\n## ^NSEBANK -- Technical Indicators\n**Current Price:** INR 57,198.80 (+0.69% today)\n\n### Momentum\n- **RSI (14):** 65.2 (neutral)\n\n### MACD\n- **MACD Line:** INR 357.0018\n- **MACD Signal:** INR 6.6338\n\n### Moving Averages\n- **SMA 20:** INR 54,568.97 (price above)\n- **SMA 50:** INR 54,843.19 (price above)\n- **SMA 200:** INR 56,979.58 (price above)\n\n### Volatility\n- **Volume Ratio (vs 20d avg):** 0.00x\n\n### 52-Week Range\n- **% from 52W High:** -7.07%\n- **% from 52W Low:** 13.77%\n\n### Market Regime\n- Trending upward (price above SMA50 & SMA200, RSI not overbought)\n- MACD bullish crossover (momentum building)",
+    "tool_calls_used": [
+      "indicators"
+    ],
+    "scores": {
+      "factual_grounding": 4.0,
+      "reasoning_coherence": 3.0,
+      "completeness": 2.0,
+      "hallucination_risk": 4.0,
+      "tool_relevance": 2.0,
+      "overall": 3.0,
+      "explanation": "The agent provided specific technical data (prices, RSI, MACD, moving averages, percentages) from the indicators tool, supporting good factual grounding. However, the response significantly underaddresses the query: it shows current technical snapshots but fails to deliver a month-over-month performance comparison (the core ask). Tool selection was incomplete\u2014the agent should have called 'analyze' for narrative comparison or used additional methods to explicitly compare performance deltas over the last month rather than just presenting static technical indicators for each index separately."
+    },
+    "passed": false,
+    "trace_id": null,
+    "timestamp": "2026-06-15T23:04:03.183541"
+  },
+  {
+    "query": "My EMA crossover strategy on Nifty is giving too many false signals. What should I try instead?",
+    "query_type": "advisory",
+    "agent_response": "I'm unable to complete this request right now due to a connectivity issue (`ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your project has exceeded its monthly spending cap. Please go to AI Studio at https://ai.studio/spend to manage your project spend cap. Learn more at https://ai.google.dev/gemini-api/docs/billing#project-spend-caps. ', 'status': 'RESOURCE_EXHAUSTED'}}`). Please check that the backend has internet access and try again.",
+    "tool_calls_used": [],
+    "scores": {
+      "factual_grounding": 1.0,
+      "reasoning_coherence": 1.0,
+      "completeness": 1.0,
+      "hallucination_risk": 5.0,
+      "tool_relevance": 1.0,
+      "overall": 1.0,
+      "explanation": "The agent failed to provide any response to the user's query about EMA crossover strategy alternatives. Instead of calling relevant tools (general for strategy concepts, or indicators/analyze for Nifty-specific analysis), it returned only a backend error message. The response contains neither 'strategy' nor 'signal' keywords addressing the question, and provides zero actionable guidance, analysis, or recommendations."
+    },
+    "passed": false,
+    "trace_id": null,
+    "timestamp": "2026-06-15T23:04:09.250185"
+  },
+  {
+    "query": "Backtest a simple RSI strategy on TCS.NS for the last 2 years.",
+    "query_type": "backtest",
+    "agent_response": "I'm unable to complete this request right now due to a connectivity issue (`ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your project has exceeded its monthly spending cap. Please go to AI Studio at https://ai.studio/spend to manage your project spend cap. Learn more at https://ai.google.dev/gemini-api/docs/billing#project-spend-caps. ', 'status': 'RESOURCE_EXHAUSTED'}}`). Please check that the backend has internet access and try again.",
+    "tool_calls_used": [],
+    "scores": {
+      "factual_grounding": 1.0,
+      "reasoning_coherence": 1.0,
+      "completeness": 1.0,
+      "hallucination_risk": 5.0,
+      "tool_relevance": 1.0,
+      "overall": 1.0,
+      "explanation": "The agent failed to execute the request entirely, providing only an error message rather than attempting to call the 'backtest' tool which is the correct tool for this query. The response contains none of the required elements (RSI, TCS, Sharpe ratio analysis) and provides zero substantive analysis, data, or insights. While the error message itself is not hallucinated, the agent's failure to call any appropriate tools and complete the analysis results in a completely inadequate response to a specific backtesting request."
+    },
+    "passed": false,
+    "trace_id": null,
+    "timestamp": "2026-06-15T23:04:14.704334"
+  },
+  {
+    "query": "Is the Indian market overbought right now? Give me a full technical picture.",
+    "query_type": "multi_step",
+    "agent_response": "I'm unable to complete this request right now due to a connectivity issue (`ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Your project has exceeded its monthly spending cap. Please go to AI Studio at https://ai.studio/spend to manage your project spend cap. Learn more at https://ai.google.dev/gemini-api/docs/billing#project-spend-caps. ', 'status': 'RESOURCE_EXHAUSTED'}}`). Please check that the backend has internet access and try again.",
+    "tool_calls_used": [],
+    "scores": {
+      "factual_grounding": 1.0,
+      "reasoning_coherence": 1.0,
+      "completeness": 1.0,
+      "hallucination_risk": 5.0,
+      "tool_relevance": 1.0,
+      "overall": 1.0,
+      "explanation": "The agent encountered a backend connectivity error (API spending cap exceeded) and failed to call any tools or provide any technical analysis. The response contains no data points, no mention of RSI, Nifty, or overbought conditions as required by the query, and does not address the question at all. While the error message itself is legitimate and not hallucinated, the agent failed to attempt any analysis or provide a meaningful response to a straightforward technical analysis request that should have been answerable."
+    },
+    "passed": false,
+    "trace_id": null,
+    "timestamp": "2026-06-15T23:04:20.347580"
+  }
+]

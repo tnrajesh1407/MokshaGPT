@@ -1,0 +1,19 @@
+metric,value,limit,status,prior_period,change
+Portfolio_Volatility_Ann_Pct,10.20,15.00,Within Limit,11.40,-1.20
+Benchmark_Volatility_Ann_Pct,9.80,,,10.20,-0.40
+Tracking_Error_Pct,3.40,6.00,Within Limit,3.80,-0.40
+Information_Ratio,0.68,,,0.55,0.13
+Sharpe_Ratio,1.55,1.00,Above Target,1.42,0.13
+Sortino_Ratio,1.92,,,1.78,0.14
+Max_Drawdown_Pct,-12.40,-20.00,Within Limit,-14.20,1.80
+Current_Drawdown_Pct,-2.10,-20.00,Within Limit,-3.40,1.30
+VaR_95_1Day_USD,-8420,-15000,Within Limit,-9100,680
+VaR_99_1Day_USD,-12650,-20000,Within Limit,-13800,1150
+CVaR_95_1Day_USD,-11200,-22000,Within Limit,-12400,1200
+Beta_vs_SP500,0.92,1.20,Within Limit,0.95,-0.03
+Top5_Concentration_Pct,65.90,70.00,Near Limit,63.20,2.70
+Top10_Concentration_Pct,90.70,95.00,Within Limit,88.40,2.30
+Tech_Sector_Exposure_Pct,53.20,60.00,Within Limit,50.10,3.10
+Fixed_Income_Exposure_Pct,8.30,,,9.50,-1.20
+Cash_Pct,2.30,5.00,Within Limit,3.10,-0.80
+Leverage_Ratio,1.00,1.50,Within Limit,1.00,0.00

@@ -1,0 +1,20 @@
+# Copy to terraform.tfvars and fill in real values.
+# NEVER commit terraform.tfvars to git — it contains secrets.
+
+aws_region  = "ap-south-1"
+environment = "prod"
+
+github_repo         = "your-org/mokshagpt"
+acm_certificate_arn = "arn:aws:acm:ap-south-1:123456789012:certificate/xxxx"
+
+gemini_api_key       = "AIza..."
+openai_api_key       = "sk-..."
+claude_api_key       = "sk-ant-..."
+supabase_url         = "https://xxxx.supabase.co"
+supabase_service_key = "eyJ..."
+langchain_api_key    = "ls__..."
+
+llm_provider  = "gemini"
+task_cpu      = 1024   # 1 vCPU
+task_memory   = 2048   # 2 GB
+desired_count = 1

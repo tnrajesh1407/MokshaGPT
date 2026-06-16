@@ -1,0 +1,38 @@
+# Exclude unnecessary files from Docker image
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Test files
+test_*.py
+*_test.py
+
+# Development files
+.env.local
+.env.development
+*.log
+.env*
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Documentation (optional - remove if you want docs in container)
+*.md
+README.md
+
+# Migrations (optional - only if not needed at runtime)
+# migrations/

@@ -1,0 +1,13 @@
+asset_class,index_name,q1_2026_return_pct,ytd_return_pct,1yr_return_pct,current_level,52w_high,52w_low,pe_ratio,yield_pct,notes
+US Large Cap Equity,S&P 500,4.22,4.22,22.10,5480,5500,4100,22.4,1.35,Resilient despite rate uncertainty; AI-driven tech rally continues
+US Tech,NASDAQ 100,6.80,6.80,28.40,19200,19400,13800,28.6,0.65,Mega-cap AI names driving outsized gains; valuations stretched
+US Small Cap,Russell 2000,1.20,1.20,8.40,2050,2180,1720,16.8,1.42,Lagging large caps; rate sensitivity weighing on sentiment
+International Dev,MSCI EAFE,3.10,3.10,12.80,2380,2420,2050,14.2,3.10,Europe resilient; Japan benefiting from weak yen and corporate reform
+Emerging Markets,MSCI EM,2.40,2.40,9.20,1080,1120,920,12.1,2.80,China recovery uneven; India and Brazil outperforming
+US Treasuries 10Y,Bloomberg US Agg,-1.80,-1.80,-2.40,4.42,5.02,3.78,0.0,4.42,Yields elevated; Fed holding rates; duration risk persists
+Investment Grade Corp,Bloomberg IG Corp,-0.80,-0.80,1.20,5.18,5.85,4.62,0.0,5.18,Spreads tight at 95bps; limited upside from here
+High Yield,Bloomberg HY,1.40,1.40,6.80,7.42,8.20,6.80,0.0,7.42,Spreads at 310bps; default rate stable at 2.8%
+Gold,LBMA Gold Spot,8.20,8.20,18.40,2340,2380,1820,0.0,0.00,Central bank buying and geopolitical risk driving demand
+Oil WTI,WTI Crude,-3.40,-3.40,2.10,78.40,95.20,66.80,0.0,0.00,OPEC+ cuts offset by rising US production; demand outlook mixed
+USD Index,DXY,1.20,1.20,3.40,104.8,107.3,99.6,0.0,0.00,Dollar firm on rate differential; watch Fed pivot signals
+Bitcoin,BTC-USD,18.40,18.40,142.00,68200,73800,25000,0.0,0.00,ETF inflows and halving narrative supporting prices

@@ -1,0 +1,13 @@
+holding,sector,avg_weight_pct,period_return_pct,contribution_to_return_pct,benchmark_weight_pct,benchmark_return_pct,allocation_effect_pct,selection_effect_pct,total_effect_pct
+NVDA,Technology,23.6,28.40,6.70,5.20,18.20,2.10,2.40,4.50
+MSFT,Technology,14.9,8.20,1.22,12.80,6.10,0.15,0.30,0.45
+AAPL,Technology,12.8,5.40,0.69,13.50,4.80,-0.05,0.08,0.03
+JPM,Financials,10.7,6.80,0.73,8.40,5.20,0.12,0.17,0.29
+BRK.B,Financials,9.0,4.20,0.38,6.10,5.20,0.18,-0.09,0.09
+GLD,Commodities,9.7,3.10,0.30,0.00,0.00,0.30,0.00,0.30
+TLT,Fixed Income,8.3,-2.10,-0.17,5.50,-1.80,-0.18,-0.02,-0.20
+PG,Consumer Staples,5.7,2.80,0.16,3.20,2.40,0.02,0.02,0.04
+JNJ,Healthcare,6.2,-1.20,-0.07,4.80,1.10,-0.11,-0.11,-0.22
+AMZN,Consumer Discretionary,3.6,4.50,0.16,4.20,3.80,0.01,0.03,0.04
+GOOGL,Technology,1.9,6.20,0.12,3.80,4.80,-0.11,0.03,-0.08
+CASH,Cash,2.3,1.30,0.03,0.00,0.00,0.03,0.00,0.03

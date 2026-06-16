@@ -1,0 +1,13 @@
+# robots.txt for MokshaGPT - Stock Market Insights by AI
+
+User-agent: *
+Allow: /
+Disallow: /privacy
+Disallow: /terms
+Disallow: /portfolio-optimizer
+
+# Sitemap location
+Sitemap: https://mokshagpt.com/sitemap.xml
+
+# Crawl-delay (optional, helps prevent server overload)
+Crawl-delay: 1

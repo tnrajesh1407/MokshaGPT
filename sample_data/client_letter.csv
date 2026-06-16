@@ -1,0 +1,23 @@
+category,item,value,prior_period,change,notes
+Portfolio Value,Total Market Value USD,1081340,1000000,81340,As of March 31 2026
+Portfolio Value,Total Cost Basis USD,920000,920000,0,
+Portfolio Value,Unrealized Gain Loss USD,161340,80000,81340,
+Portfolio Value,Unrealized Gain Loss Pct,17.54,8.70,8.84,
+Performance,Q1 2026 Return Pct,6.02,3.40,2.62,Best quarter since Q3 2023
+Performance,YTD Return Pct,6.02,,,
+Performance,1 Year Return Pct,18.40,14.20,4.20,
+Performance,Benchmark Q1 Return Pct,4.22,,,S&P 500
+Performance,Alpha Q1 Pct,1.80,,,Outperformed benchmark
+Income,Dividends Received USD,4820,4210,610,
+Income,Interest Income USD,1240,980,260,
+Income,Total Income USD,6060,5190,870,
+Transactions,Buys During Quarter,3,2,1,Added NVDA and trimmed TLT
+Transactions,Sells During Quarter,1,1,0,
+Transactions,Net Cash Flow USD,0,0,0,No client deposits or withdrawals
+Risk,Portfolio Volatility Pct,10.20,11.40,-1.20,Reduced vs prior quarter
+Risk,Max Drawdown Pct,-12.40,-14.20,1.80,Improved
+Risk,Sharpe Ratio,1.55,1.42,0.13,
+Allocation,Equities Pct,89.40,85.20,4.20,Increased equity exposure
+Allocation,Fixed Income Pct,8.30,10.80,-2.50,Reduced duration
+Allocation,Commodities Pct,9.70,8.40,1.30,Added gold position
+Allocation,Cash Pct,2.30,3.10,-0.80,Deployed cash into equities

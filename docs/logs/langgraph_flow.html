@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MokshaGPT — ReAct LangGraph Flow</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; }
+  h1 { text-align: center; padding: 28px 20px 6px; font-size: 1.7rem; color: #7dd3fc; letter-spacing: .5px; }
+  .subtitle { text-align: center; color: #94a3b8; font-size: .9rem; margin-bottom: 30px; }
+
+  /* ── TABS ── */
+  .tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
+  .tab { padding: 8px 22px; border-radius: 20px; border: 1.5px solid #334155; background: #1e293b;
+         color: #94a3b8; cursor: pointer; font-size: .85rem; transition: all .2s; }
+  .tab.active { background: #0ea5e9; border-color: #0ea5e9; color: #fff; font-weight: 600; }
+  .tab:hover:not(.active) { border-color: #7dd3fc; color: #7dd3fc; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ── SHARED LAYOUT ── */
+  .canvas { max-width: 1100px; margin: 0 auto; padding: 0 20px 60px; }
+
+  /* ── FLOW DIAGRAM ── */
+  .flow { display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .node { border-radius: 12px; padding: 14px 22px; min-width: 220px; max-width: 420px;
+          text-align: center; position: relative; }
+  .node-title { font-weight: 700; font-size: .95rem; margin-bottom: 4px; }
+  .node-sub { font-size: .78rem; color: #94a3b8; line-height: 1.4; }
+
+  .node-start   { background: #14532d; border: 2px solid #22c55e; }
+  .node-end     { background: #1e1b4b; border: 2px solid #818cf8; }
+  .node-reason  { background: #1e3a5f; border: 2px solid #38bdf8; }
+  .node-tool    { background: #3b1f0a; border: 2px solid #f97316; }
+  .node-maxstep { background: #3b1a1a; border: 2px solid #ef4444; }
+  .node-fallback{ background: #2d1b4e; border: 2px solid #a855f7; }
+  .node-import  { background: #1a2e1a; border: 2px dashed #4ade80; }
+
+  .arrow { display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .arrow-line { width: 2px; height: 28px; background: #475569; }
+  .arrow-head { width: 0; height: 0; border-left: 7px solid transparent;
+                border-right: 7px solid transparent; border-top: 10px solid #475569; }
+  .arrow-label { font-size: .72rem; color: #64748b; background: #1e293b;
+                 padding: 2px 8px; border-radius: 10px; margin: 2px 0; white-space: nowrap; }
+
+  /* conditional branch row */
+  .branch-row { display: flex; align-items: flex-start; justify-content: center; gap: 24px; width: 100%; }
+  .branch-col { display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .branch-label { font-size: .7rem; color: #f59e0b; background: #292524;
+                  padding: 2px 8px; border-radius: 8px; margin-bottom: 4px; white-space: nowrap; }
+
+  /* ── TOOL GRID ── */
+  .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+  .tool-card { background: #1e293b; border: 1.5px solid #334155; border-radius: 10px; padding: 14px 16px; }
+  .tool-card h3 { font-size: .9rem; color: #f97316; margin-bottom: 6px; }
+  .tool-card p  { font-size: .78rem; color: #94a3b8; line-height: 1.5; }
+  .tool-card .param { font-size: .72rem; color: #7dd3fc; margin-top: 6px; }
+  .tool-card .fallback-note { font-size: .7rem; color: #f87171; margin-top: 5px; }
+
+  /* ── STATE TABLE ── */
+  table { width: 100%; border-collapse: collapse; font-size: .83rem; }
+  th { background: #1e3a5f; color: #7dd3fc; padding: 10px 14px; text-align: left; }
+  td { padding: 9px 14px; border-bottom: 1px solid #1e293b; vertical-align: top; }
+  tr:nth-child(even) td { background: #111827; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: .7rem; font-weight: 600; }
+  .badge-str  { background: #14532d; color: #86efac; }
+  .badge-list { background: #1e3a5f; color: #93c5fd; }
+  .badge-int  { background: #3b1f0a; color: #fdba74; }
+  .badge-any  { background: #2d1b4e; color: #d8b4fe; }
+
+  /* ── EXCEPTION TABLE ── */
+  .exc-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+  .exc-table th { background: #3b1a1a; color: #fca5a5; padding: 10px 14px; text-align: left; }
+  .exc-table td { padding: 9px 14px; border-bottom: 1px solid #1e293b; vertical-align: top; }
+  .exc-table tr:nth-child(even) td { background: #111827; }
+  .where { color: #f97316; font-weight: 600; }
+  .recovery { color: #4ade80; }
+
+  /* ── SEQUENCE DIAGRAM ── */
+  .seq { max-width: 900px; margin: 0 auto; }
+  .seq-step { display: flex; gap: 14px; margin-bottom: 10px; align-items: flex-start; }
+  .seq-num { min-width: 28px; height: 28px; border-radius: 50%; background: #0ea5e9;
+             color: #fff; font-size: .75rem; font-weight: 700; display: flex;
+             align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+  .seq-body { background: #1e293b; border-radius: 8px; padding: 10px 14px; flex: 1; }
+  .seq-body strong { color: #7dd3fc; font-size: .85rem; }
+  .seq-body p { font-size: .78rem; color: #94a3b8; margin-top: 3px; line-height: 1.5; }
+  .seq-body code { background: #0f172a; padding: 1px 5px; border-radius: 4px; font-size: .75rem; color: #f97316; }
+
+  section-title { display: block; font-size: 1.1rem; font-weight: 700; color: #7dd3fc;
+                  margin: 28px 0 14px; border-left: 3px solid #0ea5e9; padding-left: 10px; }
+</style>
+</head>
+<body>
+<h1>MokshaGPT — ReAct LangGraph Agent</h1>
+<p class="subtitle">research_agent.py · Full flow including exceptions &amp; fallbacks</p>
+
+<div class="tabs">
+  <div class="tab active" onclick="show('flow')">Graph Flow</div>
+  <div class="tab" onclick="show('state')">AgentState</div>
+  <div class="tab" onclick="show('tools')">Tool Registry</div>
+  <div class="tab" onclick="show('exceptions')">Exceptions &amp; Fallbacks</div>
+  <div class="tab" onclick="show('sequence')">Step-by-Step Sequence</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ TAB 1: GRAPH FLOW -->
+<div id="flow" class="panel active">
+<div class="canvas">
+
+  <div class="flow">
+
+    <!-- IMPORT GUARD -->
+    <div class="node node-import">
+      <div class="node-title">📦 Module Load — LangGraph Import Guard</div>
+      <div class="node-sub">
+        <code style="color:#4ade80">try: from langgraph.graph import StateGraph, END</code><br>
+        Sets <strong>_LANGGRAPH_AVAILABLE = True/False</strong>
+      </div>
+    </div>
+    <div class="arrow"><div class="arrow-line"></div>
+      <div class="arrow-label">if ImportError → re-export backup</div>
+      <div class="arrow-head"></div>
+    </div>
+
+    <!-- ENTRY POINT -->
+    <div class="node node-start">
+      <div class="node-title">🟢 ENTRY — run_research_agent() / run_research_agent_stream()</div>
+      <div class="node-sub">
+        Builds <strong>initial AgentState</strong>: user_message, conversation_history,
+        scratchpad=[], step_count=0, final_answer="", error="", _stream_queue=None
+      </div>
+    </div>
+    <div class="arrow"><div class="arrow-line"></div>
+      <div class="arrow-label">_react_graph.invoke(initial_state)</div>
+      <div class="arrow-head"></div>
+    </div>
+
+    <!-- REASON NODE -->
+    <div class="node node-reason">
+      <div class="node-title">🧠 NODE: reason — _node_reason()</div>
+      <div class="node-sub">
+        1. Builds ReAct prompt (history + scratchpad + asset hint)<br>
+        2. Calls <strong>generate_response()</strong> → LLM<br>
+        3. Parses JSON response via <strong>_parse_react_response()</strong><br>
+        4. Emits SSE step event if stream queue attached<br>
+        5. Returns updated state with pending tool call OR final_answer
+      </div>
+    </div>
+
+    <!-- CONDITIONAL ROUTING FROM REASON -->
+    <div class="arrow"><div class="arrow-line"></div>
+      <div class="arrow-label">_route() conditional edge</div>
+      <div class="arrow-head"></div>
+    </div>
+
+    <div class="branch-row">
+
+      <!-- BRANCH A: tool call -->
+      <div class="branch-col">
+        <div class="branch-label">action == "tool_call"<br>scratchpad[-1].observation == ""</div>
+        <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+        <div class="node node-tool">
+          <div class="node-title">⚙️ NODE: execute_tool — _node_execute_tool()</div>
+          <div class="node-sub">
+            1. Duplicate-call guard (reuse prior observation)<br>
+            2. Dispatches to tool executor:<br>
+            &nbsp;&nbsp;price / indicators / analyze / forex /<br>
+            &nbsp;&nbsp;options / futures / backtest / screen / general<br>
+            3. Appends observation to scratchpad[-1]<br>
+            4. Checks for <strong>[ANALYSIS COMPLETE]</strong> / <strong>[DATA READY]</strong> markers<br>
+            5. If marker found → forced LLM synthesis → final_answer
+          </div>
+        </div>
+        <div class="arrow"><div class="arrow-line"></div>
+          <div class="arrow-label">_route() → back to reason</div>
+          <div class="arrow-head"></div>
+        </div>
+        <div style="font-size:.75rem;color:#64748b;text-align:center">↩ loops to reason</div>
+      </div>
+
+      <!-- BRANCH B: final answer -->
+      <div class="branch-col">
+        <div class="branch-label">action == "final_answer"<br>OR error set</div>
+        <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+        <div class="node node-end" style="min-width:180px">
+          <div class="node-title">🏁 END</div>
+          <div class="node-sub">final_answer populated<br>→ _build_result(state)</div>
+        </div>
+      </div>
+
+      <!-- BRANCH C: max steps -->
+      <div class="branch-col">
+        <div class="branch-label">step_count ≥ MAX_STEPS (10)</div>
+        <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+        <div class="node node-maxstep">
+          <div class="node-title">⛔ NODE: __max_steps__ — _node_max_steps()</div>
+          <div class="node-sub">
+            Collects all observations from scratchpad<br>
+            If all errors → error summary message<br>
+            Else → LLM synthesis prompt → final_answer<br>
+            If synthesis fails → raw observations joined
+          </div>
+        </div>
+        <div class="arrow"><div class="arrow-line"></div>
+          <div class="arrow-label">add_edge → END</div>
+          <div class="arrow-head"></div>
+        </div>
+        <div class="node node-end" style="min-width:180px">
+          <div class="node-title">🏁 END</div>
+          <div class="node-sub">forced final_answer</div>
+        </div>
+      </div>
+
+    </div><!-- /branch-row -->
+
+    <div style="height:30px"></div>
+
+    <!-- RESULT BUILDER -->
+    <div class="arrow"><div class="arrow-line"></div>
+      <div class="arrow-label">_build_result(final_state)</div>
+      <div class="arrow-head"></div>
+    </div>
+    <div class="node node-reason" style="max-width:500px">
+      <div class="node-title">📦 _build_result() — Response Assembly</div>
+      <div class="node-sub">
+        Determines dominant type (analysis / price / backtest / screen / forex / options / futures)<br>
+        Returns full structured backtest/screener object if applicable<br>
+        Applies _fix_table_formatting() on final markdown<br>
+        Returns: <code>{ type, content, answer, steps, step_count }</code>
+      </div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+    <!-- FALLBACK PATHS -->
+    <div class="node node-fallback">
+      <div class="node-title">🛡️ Fallback Paths (any point in flow)</div>
+      <div class="node-sub">
+        <strong>F1</strong> — LangGraph not installed → <code>research_agent_backup</code> re-exported at module level<br>
+        <strong>F2</strong> — _react_graph.invoke() raises → backup called inline<br>
+        <strong>F3</strong> — reason LLM call fails → partial observations returned as answer<br>
+        <strong>F4</strong> — forced synthesis LLM fails → raw observations joined<br>
+        <strong>F5</strong> — stream worker exception → SSE error event emitted
+      </div>
+    </div>
+
+  </div><!-- /flow -->
+
+  <div style="margin-top:30px;background:#1e293b;border-radius:10px;padding:16px 20px;font-size:.8rem;color:#94a3b8;line-height:1.7">
+    <strong style="color:#7dd3fc">Graph edges summary:</strong><br>
+    <code>set_entry_point("reason")</code><br>
+    <code>reason --[conditional]--> execute_tool | reason | __max_steps__ | END</code><br>
+    <code>execute_tool --[conditional]--> reason | __max_steps__ | END</code><br>
+    <code>__max_steps__ --[direct]--> END</code>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ TAB 2: AGENT STATE -->
+<div id="state" class="panel">
+<div class="canvas">
+  <section-title>AgentState — TypedDict (shared across all nodes)</section-title>
+  <table>
+    <tr><th>Field</th><th>Type</th><th>Initial Value</th><th>Purpose</th></tr>
+    <tr>
+      <td><strong>user_message</strong></td>
+      <td><span class="badge badge-str">str</span></td>
+      <td>caller input</td>
+      <td>The raw user question. Never mutated. Passed to every prompt build.</td>
+    </tr>
+    <tr>
+      <td><strong>conversation_history</strong></td>
+      <td><span class="badge badge-list">list[dict]</span></td>
+      <td>[] or caller-provided</td>
+      <td>Prior turns [{role, content}]. Last 4 turns injected into ReAct prompt. Assistant turns truncated to 200 chars.</td>
+    </tr>
+    <tr>
+      <td><strong>scratchpad</strong></td>
+      <td><span class="badge badge-list">list[dict]</span></td>
+      <td>[]</td>
+      <td>Accumulates {thought, action, tool, tool_input, observation} per step. Core ReAct memory. Duplicate-call guard reads this.</td>
+    </tr>
+    <tr>
+      <td><strong>step_count</strong></td>
+      <td><span class="badge badge-int">int</span></td>
+      <td>0</td>
+      <td>Incremented by execute_tool and reason (on empty final_answer blob). Compared against MAX_STEPS=10 in _route().</td>
+    </tr>
+    <tr>
+      <td><strong>final_answer</strong></td>
+      <td><span class="badge badge-str">str</span></td>
+      <td>""</td>
+      <td>Set by: reason (LLM chose final_answer), execute_tool (done-marker), __max_steps__ (forced synthesis), or error fallback. Non-empty → _route() returns END.</td>
+    </tr>
+    <tr>
+      <td><strong>error</strong></td>
+      <td><span class="badge badge-str">str</span></td>
+      <td>""</td>
+      <td>Set when reason's LLM call raises. Non-empty → _route() returns END. _build_result() converts to user-friendly message.</td>
+    </tr>
+    <tr>
+      <td><strong>_stream_queue</strong></td>
+      <td><span class="badge badge-any">Any (Queue|None)</span></td>
+      <td>None</td>
+      <td>Injected by run_research_agent_stream(). reason node puts SSE step events here. Worker thread puts final result/error then SENTINEL.</td>
+    </tr>
+  </table>
+
+  <section-title style="margin-top:28px">Scratchpad entry shape</section-title>
+  <table>
+    <tr><th>Key</th><th>Set by</th><th>Notes</th></tr>
+    <tr><td>thought</td><td>reason</td><td>LLM's reasoning text (first 100 chars logged)</td></tr>
+    <tr><td>action</td><td>reason</td><td>"tool_call" or "final_answer"</td></tr>
+    <tr><td>tool</td><td>reason</td><td>Tool name from TOOLS_SCHEMA</td></tr>
+    <tr><td>tool_input</td><td>reason</td><td>Dict of parameters for the tool</td></tr>
+    <tr><td>observation</td><td>execute_tool</td><td>Initially "". Filled after execution. Empty = pending call.</td></tr>
+  </table>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ TAB 3: TOOLS -->
+<div id="tools" class="panel">
+<div class="canvas">
+  <section-title>Tool Registry — 9 tools + dispatch map</section-title>
+  <div class="tool-grid">
+
+    <div class="tool-card">
+      <h3>💰 price</h3>
+      <p>Live price for stocks, forex, crypto, indices via yfinance fast_info.</p>
+      <div class="param">param: ticker (e.g. AAPL, RELIANCE.NS, BTC-USD, EURUSD=X)</div>
+      <div class="fallback-note">Fallback: tries ticker + ".NS" if bare uppercase. Returns error string on failure.</div>
+    </div>
+
+    <div class="tool-card">
+      <h3>📊 indicators</h3>
+      <p>Fetches specific technical indicators. Tries Supabase cache first, falls back to yfinance 2y history. Patches missing fields from yfinance if cache is partial.</p>
+      <div class="param">params: ticker, indicators (comma-list or "all")</div>
+      <div class="fallback-note">Batch mode: ThreadPoolExecutor(max_workers=8) for multi-ticker. Cache miss → yfinance. Partial cache → hybrid patch.</div>
+    </div>
+
+    <div class="tool-card">
+      <h3>🔍 analyze</h3>
+      <p>Full technical + fundamental narrative. Extracts ticker via regex fast-path or LLM fallback. Fetches 3mo/6mo history for SMA/RSI/52w range.</p>
+      <div class="param">param: query (natural language)</div>
+      <div class="fallback-note">Batch: defers to indicators data already in scratchpad. History empty → partial data_context. Always appends [ANALYSIS COMPLETE] marker.</div>
+    </div>
+
+    <div class="tool-card">
+      <h3>💱 forex</h3>
+      <p>Analyzes currency pair via analyze_forex_pair(). Returns rate, change%, trend, RSI, SMA20/50, signals.</p>
+      <div class="param">param: pair (e.g. EUR/USD, USD/INR)</div>
+      <div class="fallback-note">Returns error string if analyze_forex_pair() raises or returns {"error": ...}.</div>
+    </div>
+
+    <div class="tool-card">
+      <h3>📋 options</h3>
+      <p>Options chain or single contract. Detects contract symbol (len>10 + C/P) vs underlying. Returns Greeks, IV, near-the-money strikes.</p>
+      <div class="param">param: symbol (AAPL or AAPL240315C150)</div>
+      <div class="fallback-note">get_options_chain() returns None → error string. Contract not found → error string.</div>
+    </div>
+
+    <div class="tool-card">
+      <h3>🛢️ futures</h3>
+      <p>Commodity spot (gold/silver/oil/etc.) or futures curve (contango/backwardation). Keyword map → commodity symbol. Regex extracts futures symbol.</p>
+      <div class="param">param: query (natural language)</div>
+      <div class="fallback-note">Commodity spot fails → falls through to futures curve. Defaults to /ES if no symbol found.</div>
+    </div>
+
+    <div class="tool-card">
+      <h3>📈 backtest</h3>
+      <p>Runs run_strategy_backtest(). Caches full result in _backtest_full_result_cache["last"]. Returns metrics summary string.</p>
+      <div class="param">param: strategy (natural language)</div>
+      <div class="fallback-note">Exception → error string. _build_result() pops cache to return full structured object.</div>
+    </div>
+
+    <div class="tool-card">
+      <h3>🔎 screen</h3>
+      <p>Runs run_stock_screener(). Caches full result in _screen_full_result_cache["last"]. Returns top 10 matches summary.</p>
+      <div class="param">param: query (natural language criteria)</div>
+      <div class="fallback-note">Exception → error string. _build_result() pops cache for structured response.</div>
+    </div>
+
+    <div class="tool-card">
+      <h3>💬 general</h3>
+      <p>Answers finance/trading questions from LLM knowledge. No live data. Calls generate_response() directly.</p>
+      <div class="param">param: question</div>
+      <div class="fallback-note">Exception → error string. Used when no market data is needed.</div>
+    </div>
+
+  </div>
+
+  <section-title style="margin-top:28px">Data Source Priority (indicators tool)</section-title>
+  <div style="background:#1e293b;border-radius:10px;padding:16px 20px;font-size:.82rem;color:#94a3b8;line-height:1.9">
+    <strong style="color:#7dd3fc">1.</strong> Supabase cache (load_technicals_from_supabase) — fastest, pre-computed<br>
+    <strong style="color:#7dd3fc">2.</strong> If cache hit but fields missing → yfinance 2y history to patch gaps<br>
+    <strong style="color:#7dd3fc">3.</strong> If cache miss → yfinance 2y → 1y → 6mo (progressive fallback)<br>
+    <strong style="color:#7dd3fc">4.</strong> ATR14 always computed from raw history (not in Supabase)<br>
+    <strong style="color:#7dd3fc">5.</strong> All data fetches traced via @traceable (Langfuse observability)
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ TAB 4: EXCEPTIONS -->
+<div id="exceptions" class="panel">
+<div class="canvas">
+  <section-title>Exception &amp; Fallback Scenarios — Complete Map</section-title>
+  <table class="exc-table">
+    <tr><th>Where</th><th>What can fail</th><th>Detection</th><th>Recovery / Fallback</th></tr>
+
+    <tr>
+      <td class="where">Module import</td>
+      <td>langgraph not installed (ImportError)</td>
+      <td><code>try/except ImportError</code> at top of file</td>
+      <td class="recovery">Sets _LANGGRAPH_AVAILABLE=False. Re-exports run_research_agent + run_research_agent_stream from research_agent_backup. Callers are unaffected.</td>
+    </tr>
+
+    <tr>
+      <td class="where">run_research_agent()</td>
+      <td>_react_graph.invoke() raises any exception</td>
+      <td><code>try/except Exception as e</code> around invoke</td>
+      <td class="recovery">Logs error. Calls research_agent_backup.run_research_agent() inline. Returns backup result transparently.</td>
+    </tr>
+
+    <tr>
+      <td class="where">_node_reason()</td>
+      <td>generate_response() raises (network, timeout, LLM error)</td>
+      <td><code>try/except Exception as e</code> around LLM call</td>
+      <td class="recovery">If scratchpad has observations → returns partial answer "here's what I found so far". If empty → returns connectivity error message. Sets state.error. _route() → END.</td>
+    </tr>
+
+    <tr>
+      <td class="where">_node_reason()</td>
+      <td>LLM returns reasoning blob instead of final_answer JSON</td>
+      <td>_sanitize_final_answer() returns "" for tool-call blobs</td>
+      <td class="recovery">final_answer set to "". step_count incremented. Loop continues (does NOT end prematurely).</td>
+    </tr>
+
+    <tr>
+      <td class="where">_parse_react_response()</td>
+      <td>Malformed JSON, missing fields, partial JSON</td>
+      <td>Multi-stage regex fallback chain</td>
+      <td class="recovery">Stage 1: json.loads full blob. Stage 2: regex extract "answer" value manually. Stage 3: regex extract action+tool+tool_input. Stage 4: treat entire raw as final_answer.</td>
+    </tr>
+
+    <tr>
+      <td class="where">_node_execute_tool()</td>
+      <td>Duplicate tool call (same tool + same input)</td>
+      <td>Compares (tool, sorted JSON input) against prior scratchpad entries</td>
+      <td class="recovery">Reuses prior observation. Appends "[Note: result already fetched — use final_answer now]". Increments step_count. Avoids infinite loops.</td>
+    </tr>
+
+    <tr>
+      <td class="where">_node_execute_tool()</td>
+      <td>Done-marker in observation ([ANALYSIS COMPLETE] / [DATA READY])</td>
+      <td>String search in observation</td>
+      <td class="recovery">Triggers forced LLM synthesis immediately. Collects all observations, builds synthesis prompt, calls generate_response(). If synthesis fails → raw observations joined. Sets final_answer → END.</td>
+    </tr>
+
+    <tr>
+      <td class="where">_node_max_steps()</td>
+      <td>All observations are errors</td>
+      <td>Checks if every observation starts with "error" (case-insensitive)</td>
+      <td class="recovery">Returns structured error message with ticker format hints (TICKER.NS / TICKER.BO). Does NOT attempt LLM synthesis.</td>
+    </tr>
+
+    <tr>
+      <td class="where">_node_max_steps()</td>
+      <td>LLM synthesis call fails</td>
+      <td><code>try/except Exception as synth_err</code></td>
+      <td class="recovery">Falls back to "Based on my research:\n\n" + raw observations joined. Always produces a response.</td>
+    </tr>
+
+    <tr>
+      <td class="where">_node_max_steps()</td>
+      <td>No observations at all (all steps failed before tool execution)</td>
+      <td>observations list is empty</td>
+      <td class="recovery">Returns "I was unable to gather enough data. Please try again."</td>
+    </tr>
+
+    <tr>
+      <td class="where">_execute_price()</td>
+      <td>Ticker not found, yfinance KeyError (currentTradingPeriod)</td>
+      <td>_safe_fast_info() tries ticker + ".NS" variant</td>
+      <td class="recovery">Returns (ticker, Ticker(ticker), None, None, "USD"). _execute_price() returns "Could not fetch price" string (not exception).</td>
+    </tr>
+
+    <tr>
+      <td class="where">_execute_indicators()</td>
+      <td>Unknown indicator keys requested</td>
+      <td>Set difference against _ALL_INDICATOR_KEYS</td>
+      <td class="recovery">Logs warning, silently ignores unknown keys. Continues with valid subset.</td>
+    </tr>
+
+    <tr>
+      <td class="where">_execute_indicators()</td>
+      <td>Supabase cache miss + yfinance history empty</td>
+      <td>hist.empty checks at 2y → 1y → 6mo</td>
+      <td class="recovery">Returns "{ticker}: Could not fetch price history." string.</td>
+    </tr>
+
+    <tr>
+      <td class="where">_execute_analyze()</td>
+      <td>yfinance history empty (cloud IP blocked)</td>
+      <td>hist.empty after 3mo → 6mo retry</td>
+      <td class="recovery">Builds partial data_context with price only + note about data limitation. Analysis still runs with partial data.</td>
+    </tr>
+
+    <tr>
+      <td class="where">_execute_analyze()</td>
+      <td>Live data fetch exception</td>
+      <td><code>except Exception as data_err</code></td>
+      <td class="recovery">data_context = "(Live data fetch failed: {e})". Analysis still runs with this note injected into prompt.</td>
+    </tr>
+
+    <tr>
+      <td class="where">run_research_agent_stream()</td>
+      <td>Worker thread exception</td>
+      <td><code>except Exception as e</code> in _worker_body()</td>
+      <td class="recovery">Puts {"event": "error", "message": str(e)} on queue. Main generator yields SSE error event. Thread exits cleanly via finally: q.put(SENTINEL).</td>
+    </tr>
+
+    <tr>
+      <td class="where">run_research_agent_stream()</td>
+      <td>_react_graph.invoke() fails inside worker</td>
+      <td><code>try/except Exception as e</code> around invoke in worker</td>
+      <td class="recovery">Calls research_agent_backup.run_research_agent() synchronously. Emits result as single SSE result event. No error shown to user.</td>
+    </tr>
+
+    <tr>
+      <td class="where">_build_result()</td>
+      <td>error set but no final_answer</td>
+      <td>Checks state.error and state.final_answer</td>
+      <td class="recovery">Builds user-friendly answer from partial observations or connectivity error message. Returns type="unknown".</td>
+    </tr>
+
+  </table>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ TAB 5: SEQUENCE -->
+<div id="sequence" class="panel">
+<div class="canvas">
+  <section-title>Step-by-Step Sequence — "Analyze RELIANCE.NS" example</section-title>
+  <div class="seq">
+
+    <div class="seq-step">
+      <div class="seq-num">1</div>
+      <div class="seq-body">
+        <strong>Caller → run_research_agent("Analyze RELIANCE.NS")</strong>
+        <p>Builds <code>initial_state</code>. Calls <code>_react_graph.invoke(initial_state)</code>. LangGraph starts at entry point "reason".</p>
+      </div>
+    </div>
+
+    <div class="seq-step">
+      <div class="seq-num">2</div>
+      <div class="seq-body">
+        <strong>reason node (step 0)</strong>
+        <p><code>_build_react_prompt()</code> assembles: tool schema + conversation history (last 4 turns) + empty scratchpad + asset hint ("Detected: equity | RELIANCE.NS"). Calls LLM.</p>
+      </div>
+    </div>
+
+    <div class="seq-step">
+      <div class="seq-num">3</div>
+      <div class="seq-body">
+        <strong>LLM responds → tool_call: indicators</strong>
+        <p><code>_parse_react_response()</code> extracts <code>{"action":"tool_call","tool":"indicators","tool_input":{"ticker":"RELIANCE.NS","indicators":"rsi,macd,sma50,sma200,bb_upper,bb_lower"}}</code>. Appended to scratchpad with empty observation.</p>
+      </div>
+    </div>
+
+    <div class="seq-step">
+      <div class="seq-num">4</div>
+      <div class="seq-body">
+        <strong>_route() → execute_tool</strong>
+        <p>scratchpad[-1].observation == "" → routes to execute_tool node.</p>
+      </div>
+    </div>
+
+    <div class="seq-step">
+      <div class="seq-num">5</div>
+      <div class="seq-body">
+        <strong>execute_tool node — indicators</strong>
+        <p>No duplicate. Calls <code>_execute_indicators("RELIANCE.NS", "rsi,macd,...")</code>. Tries Supabase cache → hit. Checks for missing fields → none missing. Formats indicator table. Returns observation string. step_count → 1.</p>
+      </div>
+    </div>
+
+    <div class="seq-step">
+      <div class="seq-num">6</div>
+      <div class="seq-body">
+        <strong>_route() → reason (no done-marker)</strong>
+        <p>Observation doesn't contain [ANALYSIS COMPLETE]. Routes back to reason.</p>
+      </div>
+    </div>
+
+    <div class="seq-step">
+      <div class="seq-num">7</div>
+      <div class="seq-body">
+        <strong>reason node (step 1)</strong>
+        <p>Prompt now includes indicators observation in scratchpad. LLM decides to call <code>analyze</code> with the indicator data.</p>
+      </div>
+    </div>
+
+    <div class="seq-step">
+      <div class="seq-num">8</div>
+      <div class="seq-body">
+        <strong>execute_tool node — analyze</strong>
+        <p><code>_execute_analyze("Analyze RELIANCE.NS")</code>. Fast-path regex finds "RELIANCE.NS". Fetches fast_info (price, prev_close). Fetches 3mo history. Computes SMA20/50, RSI, 52w range. Calls LLM with data_context. Appends <code>[ANALYSIS COMPLETE -- call final_answer now]</code>. step_count → 2.</p>
+      </div>
+    </div>
+
+    <div class="seq-step">
+      <div class="seq-num">9</div>
+      <div class="seq-body">
+        <strong>Done-marker detected in execute_tool</strong>
+        <p>Observation contains "[ANALYSIS COMPLETE". Collects all observations (indicators + analysis). Builds synthesis prompt. Calls LLM → final_answer. Sets state.final_answer. Returns to _route().</p>
+      </div>
+    </div>
+
+    <div class="seq-step">
+      <div class="seq-num">10</div>
+      <div class="seq-body">
+        <strong>_route() → END</strong>
+        <p>state.final_answer is non-empty → returns END.</p>
+      </div>
+    </div>
+
+    <div class="seq-step">
+      <div class="seq-num">11</div>
+      <div class="seq-body">
+        <strong>_build_result(final_state)</strong>
+        <p>tools_used = ["indicators", "analyze"]. dominant_type = "analysis". Applies _fix_table_formatting(). Returns <code>{"type":"analysis","answer":"...markdown...","steps":[...],"step_count":2}</code>.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <section-title style="margin-top:32px">Streaming variant differences</section-title>
+  <div class="seq">
+    <div class="seq-step">
+      <div class="seq-num">S1</div>
+      <div class="seq-body">
+        <strong>run_research_agent_stream() called</strong>
+        <p>Creates <code>queue.Queue()</code>. Injects into initial_state as <code>_stream_queue</code>. Starts daemon thread via <code>copy_context().run(_worker_body)</code> (preserves Langfuse context vars).</p>
+      </div>
+    </div>
+    <div class="seq-step">
+      <div class="seq-num">S2</div>
+      <div class="seq-body">
+        <strong>reason node emits step events</strong>
+        <p>Each time reason picks a tool call, it puts <code>{"event":"step","thought":...,"tool":...,"label":"Computing technical indicators","step":N}</code> on the queue. Main thread yields <code>data: {...}\n\n</code> SSE immediately.</p>
+      </div>
+    </div>
+    <div class="seq-step">
+      <div class="seq-num">S3</div>
+      <div class="seq-body">
+        <strong>Worker puts result or error</strong>
+        <p>On success: <code>{"event":"result","type":...,"answer":...,"steps":...}</code>. On exception: <code>{"event":"error","message":...}</code>. Then puts SENTINEL object.</p>
+      </div>
+    </div>
+    <div class="seq-step">
+      <div class="seq-num">S4</div>
+      <div class="seq-body">
+        <strong>Main generator exits on SENTINEL</strong>
+        <p><code>while True: item = q.get(); if item is SENTINEL: break; yield f"data: {item}\n\n"</code></p>
+      </div>
+    </div>
+  </div>
+
+  <section-title style="margin-top:32px">Key design decisions worth mentioning in interview</section-title>
+  <div style="background:#1e293b;border-radius:10px;padding:18px 22px;font-size:.82rem;color:#94a3b8;line-height:2">
+    <strong style="color:#7dd3fc">1. Graceful degradation chain:</strong> LangGraph unavailable → backup module → never crashes caller<br>
+    <strong style="color:#7dd3fc">2. Done-marker pattern:</strong> Tools signal completion via string markers, avoiding extra LLM round-trips<br>
+    <strong style="color:#7dd3fc">3. Duplicate-call guard:</strong> Prevents infinite loops when LLM repeats the same tool call<br>
+    <strong style="color:#7dd3fc">4. Hybrid data sourcing:</strong> Supabase cache → yfinance patch → full yfinance (cost/latency optimized)<br>
+    <strong style="color:#7dd3fc">5. Streaming via queue + thread:</strong> Decouples LangGraph's synchronous invoke from SSE generator<br>
+    <strong style="color:#7dd3fc">6. copy_context():</strong> Preserves Langfuse trace context vars across thread boundary<br>
+    <strong style="color:#7dd3fc">7. MAX_STEPS=10 hard cap:</strong> Always produces an answer — never hangs indefinitely<br>
+    <strong style="color:#7dd3fc">8. Multi-stage JSON parser:</strong> Handles LLM formatting inconsistencies without crashing
+  </div>
+
+</div>
+</div>
+</div><!-- /sequence panel -->
+
+<script>
+function show(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>

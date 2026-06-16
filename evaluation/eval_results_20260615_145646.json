@@ -1,0 +1,63 @@
+[
+  {
+    "query": "What is the current price and RSI of RELIANCE.NS?",
+    "query_type": "factual_numeric",
+    "agent_response": "As of June 15, 2026, the current price and RSI for Reliance Industries Ltd (RELIANCE.NS) are as follows:\n\n| Metric | Value |\n|:-------|:------|\n| Current Price | INR 1,307.30 |\n| Daily Change | +0.83% |\n| RSI (14) | 35.9 |\n\nThe stock is currently trading at INR 1,307.30, showing a modest gain of 0.83% today. The 14-period Relative Strength Index (RSI) stands at 35.9, indicating a neutral to slightly oversold condition, but not yet in the deeply oversold territory (typically below 30). The market regime suggests a downtrend, with the price below both the SMA50 and SMA200, and MACD showing bearish momentum.",
+    "tool_calls_used": [
+      "price",
+      "indicators"
+    ],
+    "scores": {
+      "factual_grounding": 5.0,
+      "reasoning_coherence": 4.0,
+      "completeness": 5.0,
+      "hallucination_risk": 3.0,
+      "tool_relevance": 5.0,
+      "overall": 4.0,
+      "explanation": "The agent provided specific, well-formatted data points (price: INR 1,307.30, RSI: 35.9, daily change: +0.83%) directly addressing the query with appropriate tool selection. However, the response includes unsupported claims about SMA50, SMA200, and MACD that were not explicitly mentioned as retrieved indicators, creating moderate hallucination risk despite the core price and RSI metrics being accurate and grounded."
+    },
+    "passed": true,
+    "trace_id": null,
+    "timestamp": "2026-06-15T14:56:25.242514"
+  },
+  {
+    "query": "Is HDFCBANK.NS above its 50-day moving average?",
+    "query_type": "factual_numeric",
+    "agent_response": "As of June 15, 2026, HDFCBANK.NS is trading at INR 779.60, which is above its 50-day Simple Moving Average (SMA 50) of INR 773.49.\n\n**Key Data:**\n\n| Metric | Value |\n|:-------|:------|\n| Current Price | INR 779.60 |\n| SMA 50 | INR 773.49 |\n\n**Conclusion:** HDFCBANK.NS is currently trading above its 50-day moving average, indicating a short-to-medium term bullish sentiment based on this technical indicator.",
+    "tool_calls_used": [
+      "indicators"
+    ],
+    "scores": {
+      "factual_grounding": 5.0,
+      "reasoning_coherence": 5.0,
+      "completeness": 5.0,
+      "hallucination_risk": 5.0,
+      "tool_relevance": 5.0,
+      "overall": 5.0,
+      "explanation": "The response provides specific, concrete data points (current price of INR 779.60, SMA 50 of INR 773.49) directly addressing the query with precise numerical comparisons. The logic flows perfectly from the data to the conclusion that HDFCBANK.NS trades above its 50-day MA, and all required terms (SMA, 50, HDFCBANK) are present. The agent correctly used the 'indicators' tool for this technical query with no detectable hallucination or missing elements."
+    },
+    "passed": true,
+    "trace_id": null,
+    "timestamp": "2026-06-15T14:56:36.748294"
+  },
+  {
+    "query": "What is the current USD/INR exchange rate?",
+    "query_type": "factual_numeric",
+    "agent_response": "As of June 15, 2026, the current USD/INR exchange rate is **INR 94.65**.\n\nThis represents a decrease of 0.47% from its previous close of INR 95.10.",
+    "tool_calls_used": [
+      "price"
+    ],
+    "scores": {
+      "factual_grounding": 2.0,
+      "reasoning_coherence": 3.0,
+      "completeness": 4.0,
+      "hallucination_risk": 2.0,
+      "tool_relevance": 4.0,
+      "overall": 2.0,
+      "explanation": "The agent called the correct 'price' tool for a real-time exchange rate query and provided specific numerical data (INR 94.65, -0.47%, previous close INR 95.10). However, there is high hallucination risk: the USD/INR exchange rate on June 15, 2026 (the stated current date) is unverifiable in this evaluation context, and the specific figures provided cannot be confirmed as actual tool outputs rather than fabricated data. The response includes required keywords (USD, INR) and addresses the query directly, but the ungrounded nature of the exact values and change percentage significantly undermines reliability."
+    },
+    "passed": false,
+    "trace_id": null,
+    "timestamp": "2026-06-15T14:56:45.901929"
+  }
+]
